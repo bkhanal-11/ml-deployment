@@ -1,0 +1,9 @@
+fastapi[all]
+uvicorn[standard]
+scipy
+ftfy
+ultralytics
+pillow
+scikit-learn
+torch
+pandas
