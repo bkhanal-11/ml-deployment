@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from PIL import Image
@@ -13,6 +14,14 @@ from ultralytics import YOLO
 
 # Initialize application
 app = FastAPI(title="Mask Detection deployed on FastAPI")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["localhost", "127.0.0.1"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Define device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
