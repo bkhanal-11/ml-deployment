@@ -1,6 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from PIL import Image
 import numpy as np
@@ -15,20 +14,12 @@ from ultralytics import YOLO
 # Initialize application
 app = FastAPI(title="Mask Detection deployed on FastAPI")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["localhost", "127.0.0.1"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Define device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def load_model():
     global model 
-    model = YOLO('./mask-detection/runs/detect/train/weights/best.pt')
+    model = YOLO('./pretrained/best.pt')
     model.to(device)
     print(f'Loaded Model in {model.device}')
 
@@ -70,10 +61,33 @@ async def create_upload_file(file: UploadFile = File(...)):
     memory_stream = io.BytesIO()
     pil_image.save(memory_stream, format="PNG")
     memory_stream.seek(0)
+        
+    # Prepare the response JSON object
+    response_data = {
+        "predictions": [],
+        "image": f"data:image/png;base64,{filename}"
+    }
+
+    for box in results[0].boxes:
+        if box.conf < 0.7:
+            continue
+        
+        box = box.cpu().numpy() 
+        response_data["predictions"].append({
+            "class": results[0].names[int(box.cls[0])],
+            "confidence": np.round(float(box.conf), 3),
+            "bounding_box": {
+                "x": int(box.xywh[0].astype(int)[0]),
+                "y": int(box.xywh[0].astype(int)[1]),
+                "width": int(box.xywh[0].astype(int)[2]),
+                "height": int(box.xywh[0].astype(int)[3])
+            }
+        })
     
-    return StreamingResponse(memory_stream, media_type="image/png")
+    #  return StreamingResponse(memory_stream, media_type="image/png")
+    return JSONResponse(content=response_data)
 
 if __name__ == "__main__":
     # uvicorn.run(app, host="0.0.0.0", port=int(os.getenv('APP_PORT')))
     uvicorn.run("yolo_app:app", reload=False, host="10.10.5.17", port=8080)
-    
+    # curl -X POST "http://10.10.5.17:8080/uploadfile/" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "file=@mask.png"
