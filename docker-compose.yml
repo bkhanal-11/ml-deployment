@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  internal-app:
+    image: internal-app
+    environment:
+      APP_PORT: "8080"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    network_mode: host
+
+  external-app:
+    image: external-app
+    environment:
+      APP_PORT: "3000"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    network_mode: host

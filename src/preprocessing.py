@@ -12,7 +12,7 @@ class CONFIG:
     IMAGE_DIR  = os.path.join(DATA_DIR, 'images')
     LABEL_DIR  = os.path.join(DATA_DIR, 'annotations')
     
-    OUTPUT_DIR = './datasets'
+    OUTPUT_DIR = '../datasets'
     
     
     LABEL_MAP = {'without_mask'         : 0,
@@ -22,19 +22,19 @@ class CONFIG:
 class Preprocess:
     def __init__(self):
         # Create folders as per yolov8 format for saving training data
-        os.mkdir('./datasets')
-        os.mkdir('./datasets/face-mask-detection')
-        os.mkdir('./datasets/face-mask-detection/images')
-        os.mkdir('./datasets/face-mask-detection/labels')
+        os.mkdir('../datasets')
+        os.mkdir('../datasets/face-mask-detection')
+        os.mkdir('../datasets/face-mask-detection/images')
+        os.mkdir('../datasets/face-mask-detection/labels')
 
-        os.mkdir('./datasets/face-mask-detection/images/train')
-        os.mkdir('./datasets/face-mask-detection/labels/train')
+        os.mkdir('../datasets/face-mask-detection/images/train')
+        os.mkdir('../datasets/face-mask-detection/labels/train')
 
-        os.mkdir('./datasets/face-mask-detection/images/val')
-        os.mkdir('./datasets/face-mask-detection/labels/val')
+        os.mkdir('../datasets/face-mask-detection/images/val')
+        os.mkdir('../datasets/face-mask-detection/labels/val')
 
-        os.mkdir('./datasets/face-mask-detection/images/test')
-        os.mkdir('./datasets/face-mask-detection/labels/test')
+        os.mkdir('../datasets/face-mask-detection/images/test')
+        os.mkdir('../datasets/face-mask-detection/labels/test')
         
     def copy_image_file(self, image_items, folder_name):
         for image in image_items:
@@ -69,7 +69,7 @@ class Preprocess:
         1: with_mask
         2: mask_weared_incorrect"""
 
-        with open('./datasets/face-mask-detection/data.yaml', 'w') as f:
+        with open('../datasets/face-mask-detection/data.yaml', 'w') as f:
             f.write(yaml_file)
     
     def extract_annotation(self):

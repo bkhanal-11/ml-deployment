@@ -19,7 +19,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def load_model():
     global model 
-    model = YOLO('./pretrained/best.pt')
+    model = YOLO('/opt/app/pretrained/best.pt')
     model.to(device)
     print(f'Loaded Model in {model.device}')
 
@@ -88,6 +88,5 @@ async def create_upload_file(file: UploadFile = File(...)):
     return JSONResponse(content=response_data)
 
 if __name__ == "__main__":
-    # uvicorn.run(app, host="0.0.0.0", port=int(os.getenv('APP_PORT')))
-    uvicorn.run("yolo_app:app", reload=False, host="10.10.5.17", port=8080)
+    uvicorn.run("yolo_app:app", host="0.0.0.0", port=int(os.getenv('APP_PORT')))
     # curl -X POST "http://10.10.5.17:8080/uploadfile/" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "file=@mask.png"
